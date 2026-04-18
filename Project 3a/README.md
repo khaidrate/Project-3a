@@ -1,18 +1,15 @@
 # Stock Data Visualization
 **IT4320 Software Engineering — Project 3**
 
----
 
 ## What It Does
 
 This Python application lets a user look up historical stock data for any publicly traded company using the Alpha Vantage API. The user selects a stock symbol, a chart type, a time series interval, and a custom date range. The app then fetches the data and automatically opens an interactive chart in the user's default web browser.
 
----
-
-## Setup
+## khai's instructions:
 
 **1. Get a free API key**
-Go to https://www.alphavantage.co/support/#api-key and sign up for a free key.
+Go to https://www.alphavantage.co/support/#api-key and sign up for a free key, but you should already have one, and the project files include one.
 
 **2. Add your API key**
 Open `config.py` and replace `YOUR_API_KEY_HERE` with your actual key:
@@ -50,7 +47,7 @@ After the last prompt, the app fetches the data and opens your chart in the brow
 ---
 
 ## File Structure
-
+Just in case
 ```
 Stock Visualizer/
 ├── main.py                  ← Entry point — run this to start the app
@@ -63,41 +60,4 @@ Stock Visualizer/
 ├── task6_visualizer.py      ← Fetches API data and generates the chart
 └── requirements.txt         ← Python package dependencies
 ```
-
----
-
-## How Each Module Fulfills a Project Task
-
-**Task 1 — `task1_stock_symbol.py`**
-Asks the user to enter a stock ticker symbol (e.g. AAPL). Validates that the input is non-empty and contains only letters before passing it along.
-
-**Task 2 — `task2_chart_type.py`**
-Presents the user with a numbered menu of chart types (Bar or Line) and returns their selection. Keeps prompting if an invalid option is entered.
-
-**Task 3 — `task3_time_series.py`**
-Presents the user with a numbered menu of Alpha Vantage time series functions (Daily, Weekly, Monthly). Returns both the API function name and the corresponding JSON key needed to parse the response.
-
-**Task 4 — `task4_begin_date.py`**
-Asks the user for a beginning date in `YYYY-MM-DD` format. Validates the format using Python's `datetime` module and keeps prompting until a valid date is entered.
-
-**Task 5 — `task5_end_date.py`**
-Asks the user for an end date in `YYYY-MM-DD` format. In addition to format validation, it checks that the end date is not before the beginning date, re-prompting the user if it is.
-
-**Task 6 — `task6_visualizer.py`**
-Handles two things: first, it calls the Alpha Vantage API using the `requests` library and retrieves up to 20 years of stock data. Then it filters that data to the user's selected date range, builds an interactive chart using `plotly`, saves it as an HTML file, and opens it automatically in the user's default web browser.
-
----
-
-## Dependencies
-
-| Package | Purpose |
-|---|---|
-| `requests` | Makes HTTP calls to the Alpha Vantage API |
-| `plotly` | Generates interactive charts saved as HTML |
-
----
-
-## Notes
-
-- The free Alpha Vantage API tier allows 25 requests per day. If you hit the limit, wait until the next day or sign up for a paid key.
-- The generated chart file (`SYMBOL_chart.html`) is saved in the same folder as `main.py` and will be overwritten each time you run the app with the same symbol.
+enjoy
