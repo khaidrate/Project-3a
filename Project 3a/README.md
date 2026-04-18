@@ -1,11 +1,6 @@
 # Stock Data Visualization
 **IT4320 Software Engineering — Project 3**
 
-
-## What It Does
-
-This Python application lets a user look up historical stock data for any publicly traded company using the Alpha Vantage API. The user selects a stock symbol, a chart type, a time series interval, and a custom date range. The app then fetches the data and automatically opens an interactive chart in the user's default web browser.
-
 ## khai's instructions:
 
 **1. Get a free API key**
