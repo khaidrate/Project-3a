@@ -1,0 +1,27 @@
+# =============================================================================
+# docker-compose.yml — Stock Data Visualizer
+# =============================================================================
+# Defines the single service that runs the Flask app inside Docker.
+#
+# Usage:
+#   docker-compose up          → build (if needed) and start
+#   docker-compose up --build  → force rebuild and start
+#   docker-compose down        → stop and remove containers
+#
+# Once running, open your browser to:  http://localhost:5000
+# =============================================================================
+
+version: "3.9"
+
+services:
+  web:
+    build: .                    # Build image from the Dockerfile in this directory
+    container_name: stock-visualizer
+    ports:
+      - "5000:5000"             # Map host port 5000 → container port 5000
+    volumes:
+      - .:/app                  # Mount project directory so code changes reflect
+                                # immediately (no rebuild needed during development)
+    environment:
+      - FLASK_ENV=development   # Enables Flask debug mode inside the container
+    restart: unless-stopped     # Auto-restart on crash (not on manual docker stop)

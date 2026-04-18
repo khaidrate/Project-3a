@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stock Data Visualizer</title>
+  <style>
+    /* ---------------------------------------------------------- */
+    /*  Base / Reset                                               */
+    /* ---------------------------------------------------------- */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f0f2f5;
+      color: #333;
+      min-height: 100vh;
+    }
+
+    /* ---------------------------------------------------------- */
+    /*  Header                                                     */
+    /* ---------------------------------------------------------- */
+    header {
+      background: #1a6496;
+      color: #fff;
+      padding: 1.25rem 2rem;
+      text-align: center;
+    }
+    header h1 { font-size: 1.8rem; font-weight: 600; }
+    header p  { margin-top: 0.3rem; font-size: 0.95rem; opacity: 0.85; }
+
+    /* ---------------------------------------------------------- */
+    /*  Main layout                                                */
+    /* ---------------------------------------------------------- */
+    main {
+      max-width: 860px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    /* ---------------------------------------------------------- */
+    /*  Card (form wrapper)                                        */
+    /* ---------------------------------------------------------- */
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.10);
+      padding: 2rem;
+    }
+    .card h2 {
+      font-size: 1.15rem;
+      margin-bottom: 1.25rem;
+      color: #1a6496;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 0.5rem;
+    }
+
+    /* ---------------------------------------------------------- */
+    /*  Form grid                                                  */
+    /* ---------------------------------------------------------- */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.1rem;
+    }
+    @media (max-width: 560px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-group label { font-size: 0.875rem; font-weight: 600; color: #555; }
+
+    .form-group select,
+    .form-group input[type="date"] {
+      padding: 0.55rem 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 0.95rem;
+      background: #fafafa;
+      transition: border-color .2s;
+    }
+    .form-group select:focus,
+    .form-group input[type="date"]:focus {
+      outline: none;
+      border-color: #1a6496;
+      background: #fff;
+    }
+
+    /* ---------------------------------------------------------- */
+    /*  Submit button                                              */
+    /* ---------------------------------------------------------- */
+    .btn-row {
+      margin-top: 1.4rem;
+      display: flex;
+      justify-content: flex-end;
+    }
+    button[type="submit"] {
+      background: #1a6496;
+      color: #fff;
+      border: none;
+      padding: 0.65rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    button[type="submit"]:hover { background: #145278; }
+
+    /* ---------------------------------------------------------- */
+    /*  Error banner                                               */
+    /* ---------------------------------------------------------- */
+    .error-banner {
+      margin-top: 1.25rem;
+      background: #fdecea;
+      border: 1px solid #f5c6cb;
+      color: #842029;
+      padding: 0.85rem 1rem;
+      border-radius: 5px;
+      font-size: 0.9rem;
+    }
+    .error-banner strong { display: block; margin-bottom: 0.2rem; }
+
+    /* ---------------------------------------------------------- */
+    /*  Chart section                                              */
+    /* ---------------------------------------------------------- */
+    .chart-section {
+      margin-top: 2rem;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.10);
+      padding: 1.5rem;
+    }
+    .chart-section h2 {
+      font-size: 1.1rem;
+      color: #1a6496;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 0.4rem;
+    }
+
+    /* ---------------------------------------------------------- */
+    /*  Footer                                                     */
+    /* ---------------------------------------------------------- */
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.8rem;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Stock Data Visualizer</h1>
+    <p>Powered by Alpha Vantage &amp; Plotly</p>
+  </header>
+
+  <main>
+
+    <!-- ============================================================ -->
+    <!--  Input Form                                                   -->
+    <!-- ============================================================ -->
+    <div class="card">
+      <h2>Select Chart Options</h2>
+
+      <form method="POST" action="/">
+        <div class="form-grid">
+
+          <!-- Stock Symbol -->
+          <div class="form-group">
+            <label for="symbol">Stock Symbol</label>
+            <select id="symbol" name="symbol" required>
+              {% for sym in symbols %}
+                <option value="{{ sym }}"
+                  {% if sym == form_data.symbol %}selected{% endif %}>
+                  {{ sym }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Chart Type -->
+          <div class="form-group">
+            <label for="chart_type">Chart Type</label>
+            <select id="chart_type" name="chart_type" required>
+              {% for key, option in chart_types.items() %}
+                <option value="{{ key }}"
+                  {% if key == form_data.chart_type %}selected{% endif %}>
+                  {{ option.label }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Time Series -->
+          <div class="form-group">
+            <label for="time_series">Time Series</label>
+            <select id="time_series" name="time_series" required>
+              {% for key, option in time_series_options.items() %}
+                <option value="{{ key }}"
+                  {% if key == form_data.time_series %}selected{% endif %}>
+                  {{ option.label }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Begin Date -->
+          <div class="form-group">
+            <label for="begin_date">Begin Date</label>
+            <input
+              type="date"
+              id="begin_date"
+              name="begin_date"
+              value="{{ form_data.begin_date }}"
+              required
+            />
+          </div>
+
+          <!-- End Date -->
+          <div class="form-group">
+            <label for="end_date">End Date</label>
+            <input
+              type="date"
+              id="end_date"
+              name="end_date"
+              value="{{ form_data.end_date }}"
+              required
+            />
+          </div>
+
+        </div><!-- /.form-grid -->
+
+        <div class="btn-row">
+          <button type="submit">Generate Chart</button>
+        </div>
+      </form>
+
+      <!-- Error Banner (shown only on POST errors) -->
+      {% if error %}
+        <div class="error-banner">
+          <strong>Something went wrong:</strong>
+          {{ error }}
+        </div>
+      {% endif %}
+    </div><!-- /.card -->
+
+    <!-- ============================================================ -->
+    <!--  Chart Output                                                 -->
+    <!-- ============================================================ -->
+    {% if chart_html %}
+      <div class="chart-section">
+        <h2>Chart Output</h2>
+        {{ chart_html | safe }}
+      </div>
+    {% endif %}
+
+  </main>
+
+  <footer>
+    Stock Data Visualizer &mdash; Alpha Vantage API
+  </footer>
+
+</body>
+</html>
